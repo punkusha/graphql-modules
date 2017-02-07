@@ -29,10 +29,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lucasconstantino/graphql-modules.git"
+    "url": "git+https://github.com/punkusha/graphql-modules.git"
   },
   "bugs": {
-    "url": "https://github.com/lucasconstantino/graphql-modules/issues"
+    "url": "https://github.com/punkusha/graphql-modules/issues"
   },
-  "homepage": "https://github.com/lucasconstantino/graphql-modules#readme"
+  "homepage": "https://github.com/punkusha/graphql-modules#readme"
 }

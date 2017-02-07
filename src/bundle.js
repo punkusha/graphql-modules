@@ -88,9 +88,9 @@ function bundle(modules = [], options = {}) {
   const fieldResolvers = Object.assign.apply(null, modules.map(({ resolvers: { queries, mutations, subscriptions, ...fieldResolvers } = {} }) => fieldResolvers));
 
   const resolvers = {
-    ...(queries ? { RootQuery: queriesResolvers } : {}),
-    ...(mutations ? { RootMutation: mutationsResolvers } : {}),
-    ...(subscriptions ? { RootSubscription: subscriptionsResolvers } : {}),
+    ...(queries ? { [options.rootKeys.query]: queriesResolvers } : {}),
+    ...(mutations ? { [options.rootKeys.mutation]: mutationsResolvers } : {}),
+    ...(subscriptions ? { [options.rootKeys.subscription]: subscriptionsResolvers } : {}),
     ...fieldResolvers
   };
 
@@ -124,12 +124,6 @@ function bundle(modules = [], options = {}) {
       ${RootSubscription && 'subscription: ' + options.rootKeys.subscription}
     }
   `;
-
-  // typeDefs,
-  // resolvers,
-  // logger,
-  // allowUndefinedInResolve = false,
-  // resolverValidationOptions = {},
 
   const config = { typeDefs, resolvers };
 

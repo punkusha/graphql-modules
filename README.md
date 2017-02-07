@@ -2,17 +2,16 @@
 
 A library to simplify modularization of [Apollo server](http://dev.apollodata.com/tools/graphql-server/index.html) applications.
 
-![Build status](https://travis-ci.org/lucasconstantino/graphql-modules.svg?branch=master)
+## This is the fork!
+
+Original repository: https://github.com/lucasconstantino/graphql-modules
+
+### Changes:
+* fixed resolvers root keys
 
 ## Installation
 
-This package is available on [npm](https://www.npmjs.com/package/graphql-modules) as: *graphql-modules*
-
-```
-npm install graphql-modules
-```
-
-> You should consider using [yarn](https://yarnpkg.com/), though.
+git submodules tool: [mgit2](https://github.com/cksource/mgit2)
 
 ## Basic usage
 
