@@ -1,38 +1,42 @@
-import extend from 'extend'
 
 const defaultOptions = {
   rootKeys: {
     query: 'RootQuery',
     mutation: 'RootMutation',
-    subscription: 'RootSubscription',
+    subscription: 'RootSubscription'
   }
 }
 
-// Helper to flatten a deeply nested array.
-const flatten = (result, subject) => result.concat(Array.isArray(subject) ? subject.reduce(flatten, []) : subject)
 
-const processedModules = []
+const processedModules = [];
 
-const processModule = module => {
+function processModule(module) {
   // Recursion security meassure.
-  if (processedModules.indexOf(module) !== -1) return []
-  processedModules.push(module)
+  if (processedModules.indexOf(module) !== -1) return [];
+  processedModules.push(module);
 
   // 1 - Factory format.
   if (module && module.constructor && module.call && module.apply) {
-    return processModule(module())
+    return processModule(module());
   }
 
   // 2 - Array of modules format.
   if (Array.isArray(module)) {
-    return module.map(processModule)
+    return module.map(processModule);
   }
 
   // 3 - Available submodules/dependencies.
-  const dependencies = module.modules || []
-  delete module.modules
+  const dependencies = module.modules || [];
+  delete module.modules;
 
-  return [module].concat(dependencies.map(processModule))
+  return [module].concat(dependencies.map(processModule));
+}
+
+// Helper to flatten a deeply nested array.
+function flatten(result, subject) {
+  return result.concat(Array.isArray(subject)
+    ? subject.reduce(flatten, [])
+    : subject);
 }
 
 /**
@@ -61,50 +65,52 @@ const processModule = module => {
  *                                 after it's being created.
  * @param {Object} options An object of options.
  * @param {Object} options.rootKeys A map of root query keys.
- * @param {String} [options.rootKeys.query="RootQuery"] The root key for queries.
- * @param {String} [options.rootKeys.mutation="RootMutation"] The root key for mutations.
- * @param {String} [options.rootKeys.subscription="RootSubscription"] The root key for subscriptions.
+ * @param {String} [options.rootKeys.query='RootQuery'] The root key for queries.
+ * @param {String} [options.rootKeys.mutation='RootMutation] The root key for mutations.
+ * @param {String} [options.rootKeys.subscription='RootSubscription'] The root key for subscriptions.
  *
- * @return {Object} Options as expected by http://dev.apollodata.com/tools/graphql-tools/generate-schema.html#makeExecutableSchema.
+ * @returns {Object} result
+ *                   result.typeDefs
+ *                   result.resolvers
  */
-export default (modules = [], options = {}) => {
-  options = extend(true, {}, defaultOptions, options)
-  modules = modules.reduce((modules, module) => modules.concat(processModule(module)), []).reduce(flatten, [])
+function bundle(modules = [], options = {}) {
+  options = Object.assign({}, defaultOptions, options);
+  modules = modules.reduce((modules, module) => modules.concat(processModule(module)), []).reduce(flatten, []);
 
-  const schema = modules.map(module => module.schema || '').filter(Boolean).join(`\n`)
-  const queries = modules.map(module => module.queries || '').filter(Boolean).join(`\n`)
-  const mutations = modules.map(module => module.mutations || '').filter(Boolean).join(`\n`)
-  const subscriptions = modules.map(module => module.subscriptions || '').filter(Boolean).join(`\n`)
+  const schema = modules.map(module => module.schema || '').filter(Boolean).join(`\n`);
+  const queries = modules.map(module => module.queries || '').filter(Boolean).join(`\n`);
+  const mutations = modules.map(module => module.mutations || '').filter(Boolean).join(`\n`);
+  const subscriptions = modules.map(module => module.subscriptions || '').filter(Boolean).join(`\n`);
 
-  const queriesResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.queries || {}))
-  const mutationsResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.mutations || {}))
-  const subscriptionsResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.subscriptions || {}))
-  const fieldResolvers = Object.assign.apply(null, modules.map(({ resolvers: { queries, mutations, subscriptions, ...fieldResolvers } = {} }) => fieldResolvers))
+  const queriesResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.queries || {}));
+  const mutationsResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.mutations || {}));
+  const subscriptionsResolvers = Object.assign.apply(null, modules.map(module => module.resolvers && module.resolvers.subscriptions || {}));
+  const fieldResolvers = Object.assign.apply(null, modules.map(({ resolvers: { queries, mutations, subscriptions, ...fieldResolvers } = {} }) => fieldResolvers));
 
   const resolvers = {
     ...(queries ? { RootQuery: queriesResolvers } : {}),
     ...(mutations ? { RootMutation: mutationsResolvers } : {}),
     ...(subscriptions ? { RootSubscription: subscriptionsResolvers } : {}),
     ...fieldResolvers
-  }
+  };
 
   const RootQuery = queries.length ? `
     type ${options.rootKeys.query} {
       ${queries}
     }
-  ` : ''
+  ` : '';
 
   const RootMutation = mutations.length ? `
     type ${options.rootKeys.mutation} {
       ${mutations}
     }
-  ` : ''
+  ` : '';
 
   const RootSubscription = subscriptions.length ? `
     type ${options.rootKeys.subscription} {
       ${subscriptions}
     }
-  ` : ''
+  ` : '';
 
   const typeDefs = `
     ${schema}
@@ -117,7 +123,7 @@ export default (modules = [], options = {}) => {
       ${RootMutation && 'mutation: ' + options.rootKeys.mutation}
       ${RootSubscription && 'subscription: ' + options.rootKeys.subscription}
     }
-  `
+  `;
 
   // typeDefs,
   // resolvers,
@@ -125,7 +131,10 @@ export default (modules = [], options = {}) => {
   // allowUndefinedInResolve = false,
   // resolverValidationOptions = {},
 
-  const config = { typeDefs, resolvers }
+  const config = { typeDefs, resolvers };
 
-  return modules.reduce((config, { alter = obj => obj }) => alter(config), config)
+  return modules.reduce((config, { alter = obj => obj }) => alter(config), config);
 }
+
+
+export default bundle;

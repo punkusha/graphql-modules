@@ -1,7 +1,5 @@
 src
 test
-.babelrc
-.eslintrc
+.babelrcx
 .gitignore
 .travis.yml
-yarn.lock
