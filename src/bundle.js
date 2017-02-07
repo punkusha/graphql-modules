@@ -1,9 +1,9 @@
 
 const defaultOptions = {
   rootKeys: {
-    query: 'RootQuery',
-    mutation: 'RootMutation',
-    subscription: 'RootSubscription'
+    query: 'Query',
+    mutation: 'Mutation',
+    subscription: 'Subscription'
   }
 }
 
@@ -65,9 +65,9 @@ function flatten(result, subject) {
  *                                 after it's being created.
  * @param {Object} options An object of options.
  * @param {Object} options.rootKeys A map of root query keys.
- * @param {String} [options.rootKeys.query='RootQuery'] The root key for queries.
- * @param {String} [options.rootKeys.mutation='RootMutation] The root key for mutations.
- * @param {String} [options.rootKeys.subscription='RootSubscription'] The root key for subscriptions.
+ * @param {String} [options.rootKeys.query='Query'] The root key for queries.
+ * @param {String} [options.rootKeys.mutation='Mutation] The root key for mutations.
+ * @param {String} [options.rootKeys.subscription='Subscription'] The root key for subscriptions.
  *
  * @returns {Object} result
  *                   result.typeDefs
@@ -94,19 +94,19 @@ function bundle(modules = [], options = {}) {
     ...fieldResolvers
   };
 
-  const RootQuery = queries.length ? `
+  const Query = queries.length ? `
     type ${options.rootKeys.query} {
       ${queries}
     }
   ` : '';
 
-  const RootMutation = mutations.length ? `
+  const Mutation = mutations.length ? `
     type ${options.rootKeys.mutation} {
       ${mutations}
     }
   ` : '';
 
-  const RootSubscription = subscriptions.length ? `
+  const Subscription = subscriptions.length ? `
     type ${options.rootKeys.subscription} {
       ${subscriptions}
     }
@@ -114,14 +114,14 @@ function bundle(modules = [], options = {}) {
 
   const typeDefs = `
     ${schema}
-    ${RootQuery}
-    ${RootMutation}
-    ${RootSubscription}
+    ${Query}
+    ${Mutation}
+    ${Subscription}
 
     schema {
-      ${RootQuery && 'query: ' + options.rootKeys.query}
-      ${RootMutation && 'mutation: ' + options.rootKeys.mutation}
-      ${RootSubscription && 'subscription: ' + options.rootKeys.subscription}
+      ${Query && 'query: ' + options.rootKeys.query}
+      ${Mutation && 'mutation: ' + options.rootKeys.mutation}
+      ${Subscription && 'subscription: ' + options.rootKeys.subscription}
     }
   `;
 

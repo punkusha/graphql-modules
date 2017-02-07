@@ -8,6 +8,7 @@ Original repository: https://github.com/lucasconstantino/graphql-modules
 
 ### Changes:
 * fixed resolvers root keys
+* migrate default options to new graphql naming convention (without Root-)
 
 ## Installation
 
